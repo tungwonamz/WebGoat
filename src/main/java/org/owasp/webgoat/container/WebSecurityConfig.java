@@ -89,7 +89,15 @@ public class WebSecurityConfig {
         .logout(logout -> logout.deleteCookies("JSESSIONID").invalidateHttpSession(true))
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(csrf -> csrf.disable())
-        .headers(headers -> headers.disable())
+        .headers(headers -> headers
+                .addHeaderWriter(
+                        new StaticHeadersWriter("Strict-Transport-Security", "max-age=31536000; includeSubDomains"))
+                .addHeaderWriter(
+                        new StaticHeadersWriter("Content-Security-Policy", "default-src 'self'; script-src 'self'; object-src 'none'; style-src 'self'; base-uri 'none'; frame-ancestors 'none'"))
+                .addHeaderWriter(
+                        new StaticHeadersWriter("X-Content-Type-Options", "nosniff"))
+                .addHeaderWriter(
+                        new StaticHeadersWriter("X-Frame-Options", "SAMEORIGIN")))
         .exceptionHandling(
             handling ->
                 handling.authenticationEntryPoint(new AjaxAuthenticationEntryPoint("/login")))
